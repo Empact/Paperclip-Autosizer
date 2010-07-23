@@ -9,9 +9,11 @@ private
   end
 
   def autosize_attached_files
-    styles_to_autosize.each_pair do |style, column_for_style|
-      send(:"#{column_for_style}=", calculate_size_of_reduced_image(style))
+    style_autosizes = styles_to_autosize.inject({}) do |accumulator, (style, column_for_style)|
+      accumulator[column_for_style] = calculate_size_of_reduced_image(style)
+      accumulator
     end
+    update_attributes(style_autosizes)
   end
 
   def styles_to_autosize
