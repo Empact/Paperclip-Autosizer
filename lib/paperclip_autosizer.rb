@@ -15,8 +15,7 @@ private
   end
 
   def styles_to_autosize
-    styles = autosizer_attachment.styles.keys
-    styles.inject({}) do |accumulator, style|
+    autosizer_attachment.styles.keys.inject({}) do |accumulator, style|
       column_for_style = [@autosizer_attachment_name, style.to_s, "size"].join("_")
       if self.class.column_names.include?(column_for_style)
         accumulator[style] = column_for_style
