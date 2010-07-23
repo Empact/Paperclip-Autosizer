@@ -1,15 +1,7 @@
 class PaperclipAutosizer < ActiveRecord::Base
   self.abstract_class = true
-  
-  # Reciever Methods for messages from the autosize processor
-  def autosizer_attachment_name(attachment_name)
-    @attachment_name = attachment_name
-  end
-  
-  def autosizer_original_file_geometry(geometry_object)
-    @original_file_geometry = geometry_object
-  end
-  
+
+  attr_writer :autosizer_attachment_name, :autosizer_original_file_geometry
 
 private
   def autosize_attached_files
@@ -20,20 +12,20 @@ private
       self.method(column_for_style.concat('=').to_sym).call(target_size)
     end
   end
-  
+
   def get_styles_to_autosize
     styles_to_autosize = Hash.new
-    styles = self.method(@attachment_name).call.styles.keys
+    styles = self.method(@autosizer_attachment_name).call.styles.keys
     styles.each do |style|
-      column_for_style = [@attachment_name, style.to_s, "size"].join("_")
+      column_for_style = [@autosizer_attachment_name, style.to_s, "size"].join("_")
       styles_to_autosize.merge!({style => column_for_style}) if self.class.column_names.include?(column_for_style)
     end
     return styles_to_autosize
   end
-  
+
   def calculate_size_of_reduced_image(style)
-    target_width, target_height = self.method(@attachment_name).call.styles[style][:geometry].split("x").collect{|x| x.to_f}
-    width, height = @original_file_geometry.width, @original_file_geometry.height
+    target_width, target_height = self.method(@autosizer_attachment_name).call.styles[style][:geometry].split("x").collect{|x| x.to_f}
+    width, height = @autosizer_original_file_geometry.width, @autosizer_original_file_geometry.height
     original_ratio = width.to_f / height.to_f
     if (original_ratio <= 1 && target_height < height)
       width  = original_ratio * target_height
