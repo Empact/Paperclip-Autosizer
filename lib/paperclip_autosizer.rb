@@ -5,22 +5,19 @@ class PaperclipAutosizer < ActiveRecord::Base
 
 private
   def autosize_attached_files
-    styles_to_autosize = get_styles_to_autosize
-    return if styles_to_autosize.length == 0
     styles_to_autosize.each_pair do |style, column_for_style|
       target_size = calculate_size_of_reduced_image(style)
       self.method(column_for_style.concat('=').to_sym).call(target_size)
     end
   end
 
-  def get_styles_to_autosize
-    styles_to_autosize = Hash.new
+  def styles_to_autosize
     styles = self.method(@autosizer_attachment_name).call.styles.keys
-    styles.each do |style|
+    styles.inject({}) do |accumulator, style|
       column_for_style = [@autosizer_attachment_name, style.to_s, "size"].join("_")
-      styles_to_autosize.merge!({style => column_for_style}) if self.class.column_names.include?(column_for_style)
+      accumulator.merge!({style => column_for_style}) if self.class.column_names.include?(column_for_style)
+      accumulator
     end
-    return styles_to_autosize
   end
 
   def calculate_size_of_reduced_image(style)
