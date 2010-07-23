@@ -15,7 +15,9 @@ private
     styles = self.method(@autosizer_attachment_name).call.styles.keys
     styles.inject({}) do |accumulator, style|
       column_for_style = [@autosizer_attachment_name, style.to_s, "size"].join("_")
-      accumulator.merge!({style => column_for_style}) if self.class.column_names.include?(column_for_style)
+      if self.class.column_names.include?(column_for_style)
+        accumulator[style] = column_for_style
+      end
       accumulator
     end
   end
