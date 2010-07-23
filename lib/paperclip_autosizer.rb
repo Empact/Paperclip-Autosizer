@@ -5,13 +5,12 @@ class PaperclipAutosizer < ActiveRecord::Base
 
 private
   def autosizer_attachment_styles
-    self.send(@autosizer_attachment_name).styles
+    send(@autosizer_attachment_name).styles
   end
 
   def autosize_attached_files
     styles_to_autosize.each_pair do |style, column_for_style|
-      target_size = calculate_size_of_reduced_image(style)
-      self.send(:"#{column_for_style}=", target_size)
+      send(:"#{column_for_style}=", calculate_size_of_reduced_image(style))
     end
   end
 
@@ -37,6 +36,6 @@ private
       width  = target_width
       height = (1 / original_ratio) * target_width
     end
-    return [width.round, height.round].join("x")
+    [width.round, height.round].join("x")
   end
 end
