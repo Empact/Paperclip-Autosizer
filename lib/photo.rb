@@ -26,11 +26,4 @@ class Photo < PaperclipAutosizer
   validates_attachment_content_type :micrograph, :content_type => ['image/jpeg', 'image/png']
   after_micrograph_post_process :autosize_attached_files
 
-  
-
-  
-  
-
-
-
 end
